@@ -49,5 +49,46 @@
  *   // => { name: "Ram", area: "Dadar", total: 2, completed: 1, pending: 1, successRate: "50.00%" }
  */
 export function createDabbawala(name, area) {
-  // Your code here
+  let deliveries= [];  //private state
+  let nextId = 0;  //private state
+  
+  //these private states will be shared by all methods of the returned object below
+
+  return {
+     addDelivery(from,to){
+       if(from === undefined || to === undefined || from.trim() === "" || to.trim() === "")
+       {
+        return -1;
+       }
+       
+       deliveries.push( { id: ++nextId, from, to, status: "pending" });
+       return deliveries.length;
+     },
+
+     completeDelivery(id){
+      const booleanValue = deliveries.some((d) => (d.id === id && d.status === "pending") ); 
+      deliveries.forEach((d) => { if(d.id === id && d.status === "pending") d.status = "completed"; }); //mark it(delivery) as completed
+      return booleanValue;
+     },
+
+     getActiveDeliveries(){
+       const copy = deliveries.filter((d)=> (d.status === "pending"));
+       return copy;
+     },
+
+     getStats(){
+      const total = deliveries.length; 
+      const pending = this.getActiveDeliveries().length; 
+      const completed = total - pending; 
+
+      const successRate = (total === 0)? "0.00%" : ( (completed/total * 100).toFixed(2) + "%");
+      return { name, area, total, completed, pending, successRate };
+     },
+
+     reset(){
+      deliveries = [];
+      nextId = 0;
+      return true;
+     },
+  };
 }
