@@ -45,13 +45,83 @@
  *   pricer("gold", true)  // => 200 * 1.5 * 1.3 = 390
  */
 export function createDialogueWriter(genre) {
-  // Your code here
+  if(genre !== "action" && genre !== "romance" && genre !== "comedy" && genre !== "drama")
+  {
+    return null;
+  }
+
+  function fun(hero,villain){
+     if(hero === undefined || villain === undefined || hero.trim() === "" || villain.trim() === "")
+     {
+      return "...";
+     }
+
+      switch(genre)
+     {
+       case "action": return `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`;
+       case "romance":  return `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`;
+       case "comedy": return `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`;
+       case  "drama":  return `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`;
+     }
+  }
+
+  return fun;
 }
 
 export function createTicketPricer(basePrice) {
-  // Your code here
+  if(typeof basePrice !== 'number' || isNaN(basePrice) || basePrice <= 0)
+  {
+    return null;
+  }
+
+  function fun(seatType, isWeekend = false){
+    switch(seatType){
+     case 'silver':
+       basePrice = basePrice*1;
+       break;
+     case 'gold':
+       basePrice= basePrice*1.5;
+       break;
+     case 'platinum':
+       basePrice = basePrice*2;
+       break;
+     default:
+       return null;  
+    }
+    
+    const finalPrice = Math.round( isWeekend? basePrice * (1.3) : basePrice );
+    return finalPrice;
+  }
+
+  return fun;
 }
 
 export function createRatingCalculator(weights) {
-  // Your code here
+ 
+  if(typeof weights !== 'object' || weights === null)
+   {
+    return null;
+   }
+    
+  function fun(scores) {
+      
+     
+     let weightedAvg = 0;
+
+     for(let [key1,w] of Object.entries(weights))
+     {
+       for(let [key2,s] of Object.entries(scores))
+        {
+          if(key1 === key2)
+          {
+            weightedAvg += w*s;
+          }
+        }
+     } 
+     
+     weightedAvg = +weightedAvg.toFixed(1); //round to 1 decimal place
+     return weightedAvg;
+   }
+
+   return fun;
 }
