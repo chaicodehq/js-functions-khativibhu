@@ -52,22 +52,193 @@
  *   isPalindrome("madam")     // => true
  *   generatePattern(3)        // => ["*", "**", "***", "**", "*"]
  */
-export function repeatChar(char, n) {
-  // Your code here
+export function repeatChar(char, n) {     //n dependent recursion. Here, recursion is dependent only on one parameter n. Sirf n ke change hone par recursion work kar raha hai.
+  /*
+  if(char.length === n) //base case
+  {
+    return char;
+  }
+  */
+  
+  if(typeof char !== 'string' || char.trim().length == 0) //validation
+  {
+    return "";
+  }
+
+  //base case
+  if(n <= 0)
+  {
+    return "";
+  }
+
+  //recursive case
+  return char + repeatChar(char,n-1); 
 }
 
+
+//less memory efficient as ... rest operator creates a new array , every call
 export function sumNestedArray(arr) {
-  // Your code here
+  if(!Array.isArray(arr))
+  {
+    return 0;
+  }
+
+  if(arr.length === 0)  //base case (terminating case)
+  {
+    return 0;
+  }
+  
+  const [head,...tail] = arr;  //head is first element and tail is array of the rest elements
+  
+  let currentValue = 0;  
+  
+    if(Array.isArray(head))
+    {
+      currentValue = sumNestedArray(head);
+    }
+    else if(typeof head === 'number' )
+    {
+      currentValue = head;
+    }
+    
+    //if non-numbers , then currentValue = 0
+
+  return currentValue + sumNestedArray(tail) ; 
 }
+
+
+/*
+export function sumNestedArray(arr) {
+  if(!Array.isArray(arr))
+  {
+    return 0;
+  }
+
+  if(arr.length === 0)  //base case (terminating case)
+  {
+    return 0;
+  }
+  
+  let sum=0;
+
+  for(let i=0;i<arr.length;i++)
+  {
+    if(Array.isArray(arr[i]))
+    {
+      sum = sum + sumNestedArray(arr[i]);
+      continue; //skip
+    }
+    else if(typeof arr[i] !== 'number' )
+    {
+      continue; //skip non-number values
+    }
+
+    sum = sum + arr[i]; 
+  }
+  
+  return sum;
+}
+  */
+
+//more memory costlier code as ... rest operator. So, code can cause Call Stack Overflow
 
 export function flattenArray(arr) {
-  // Your code here
+  if(!Array.isArray(arr)) //base case
+  {
+    return [];
+  }
+
+  if(arr.length === 0)  //base case
+  {
+    return [];
+  }
+  
+  const [head,...tail] = arr;  //destructuring step
+
+  let newarray = [];
+
+  if(Array.isArray(head))
+  {
+      newarray = flattenArray(head);
+  }
+  else if(typeof head === 'number' || typeof head === 'string')
+  {  
+    newarray = [head];   //Wrap single number or single string in array for merging
+  }  
+
+  //if non-numbers and non-strings, then newarray = []
+
+  return [...newarray,...flattenArray(tail)];  // Combine the flattened head with the flattened tail
 }
+
+/*
+export function flattenArray(arr) {
+  if(!Array.isArray(arr))
+  {
+    return [];
+  }
+  
+  let newarray = [];
+
+  for(let i=0;i<arr.length; i++)
+  {
+    if(Array.isArray(arr[i]))
+    {
+      newarray.push( ...flattenArray(arr[i]) );
+      continue;
+    }
+
+    newarray.push(arr[i]);
+  }
+
+  return newarray;
+}
+  */
 
 export function isPalindrome(str) {
-  // Your code here
+  if(typeof str !== 'string'){
+    return false;
+  }
+
+  if(str.length <= 1)
+    {
+      return true;
+    } 
+
+  
+  const left = str.charAt(0).toLowerCase();
+  const leftIndex = str.indexOf(left);
+  const right = str.charAt(str.length - 1).toLowerCase();
+  const rightIndex = str.indexOf(right);
+  
+  const booleanAns = isPalindrome( str.slice(leftIndex+1,rightIndex) );
+  
+  return booleanAns && left == right;   //compare left and right chars on middle when leftIndex >= rightIndex
 }
 
+
 export function generatePattern(n) {
-  // Your code here
+  if(typeof n !== 'number' || isNaN(n) || !Number.isInteger(n) || n<=0)  //validation
+  {
+   return [];
+  }
+
+  if(n==1)   //base case
+  {
+    return ["*"];  //when inside this base case, below code does not runs
+  }
+  
+  
+  //recursive case
+  const smallerPatternArray = generatePattern(n-1);  //repeatedly calling itself untill call hits base case n==1
+   
+  const starValue = "*".repeat(n); //current row of stars
+   
+  const middleIndex = Math.floor(smallerPatternArray.length /2);
+
+ const leftSide = smallerPatternArray.slice(0,middleIndex+1);
+ const rightSide = smallerPatternArray.slice(middleIndex);
+
+  return [...leftSide,starValue,...rightSide];
+
 }
