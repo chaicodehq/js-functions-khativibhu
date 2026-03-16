@@ -45,17 +45,77 @@
  *   // => [{ rating: 5 }, { rating: 3 }]
  */
 export function createFilter(field, operator, value) {
-  // Your code here
+  
+  switch(operator)
+  {
+    case ">":
+      return function fun(obj) 
+              {
+                return obj[field] > value;
+              };
+    
+    case "<":
+      return function fun(obj)
+              {
+                return obj[field] < value;
+              };
+    case ">=": 
+      return function fun(obj)
+              {
+                return obj[field] >= value;
+              };
+    case "<=":
+       return function fun(obj)
+              {
+                return obj[field] <= value;
+              };
+    case "===":
+      return function fun(obj)
+              {
+                return obj[field] === value;
+              };
+    default:
+      return function fun(obj){
+             return false;
+      }            
+  }
 }
 
 export function createSorter(field, order = "asc") {
-  // Your code here
+   return function comparatorFunction(ob1,ob2){
+      if(order === "asc")
+      {
+        return (typeof ob1[field] === "string") ? ob1[field].localeCompare(ob2[field]): ob1[field] - ob2[field];
+      }
+      else{
+      return (typeof ob1[field] === "string") ? ob2[field].localeCompare(ob1[field]): ob2[field] - ob1[field];          //in descending order
+      }
+   };
 }
 
 export function createMapper(fields) {
-  // Your code here
+ 
+  return function fun(obj)
+   {
+     const newObject = {};
+
+     for(const key in obj)
+     {
+       if(fields.includes(key)) {
+         newObject[key] = obj[key];
+       }
+     }
+
+     return newObject;
+   };
 }
 
 export function applyOperations(data, ...operations) {
-  // Your code here
+  if(!Array.isArray(data))
+  {
+    return [];
+  }
+
+  const finalAns = operations.reduce((acc,operation) => operation(acc), data);
+  return finalAns;
 }
