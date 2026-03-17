@@ -53,29 +53,64 @@
  *   // => { name: "Haldi", form: "powder", packed: true, label: "Haldi Masala" }
  */
 export function pipe(...fns) {
-  // Your code here
+ if(fns.length === 0)  //args is empty array
+  {
+    return function f(x){
+      return x;
+    };
+  } 
+
+ return function fun(x){
+   const finalResult = fns.reduce((acc,fn)=> fn(acc), x);
+   return finalResult;
+ }; 
 }
 
 export function compose(...fns) {
-  // Your code here
+  if(fns.length === 0) //no functions given
+  {
+   // return function f(x) {return x; };
+   return (x) => x;
+  }
+
+  return function fun(x){
+    const finalResult = fns.reduceRight((acc,fn)=> fn(acc), x);
+    return finalResult;
+  };
 }
 
 export function grind(spice) {
-  // Your code here
+  return {...spice, form: "powder"};
 }
 
 export function roast(spice) {
-  // Your code here
+  return {...spice, roasted: true, aroma: "strong"};
 }
 
 export function mix(spice) {
-  // Your code here
+  return {...spice, mixed: true};
 }
 
 export function pack(spice) {
-  // Your code here
+  return {...spice,packed: true, label: `${spice.name} Masala`};
 }
 
 export function createRecipe(steps) {
-  // Your code here
+ if(!Array.isArray(steps) || steps.length === 0)
+  {
+    return (x) => x;
+  } 
+
+ const stepFunctions = steps.filter((step)=> (step === 'grind' || step === 'roast' || step === 'mix' || step === 'pack')).map((step)=> {
+    //return eval(step);  //using eval() is not best practice as it poses security risk.
+    if(step === 'grind') return grind;
+    if(step === 'roast') return roast;
+    if(step === 'mix') return mix;
+    if(step === 'pack') return pack;
+});
+ 
+ return function fun(x){
+ const finalResult = stepFunctions.reduce((acc,stepFunction)=> stepFunction(acc), x);  //piping of functions
+ return finalResult;
+ };
 }

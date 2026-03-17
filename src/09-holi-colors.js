@@ -155,7 +155,7 @@ export function mergePalettes(palette1, palette2) {
     {
       if(merged[i].name === merged[j].name) //or instead can use object comparison i.e. JSON.stringify(merged[i]) === JSON.stringify(merged[j])
       {
-        merged.splice(j,1); //at j index 1 item removed because we want only the first occurrence i
+        merged.splice(j,1); //at j index, 1 item removed because we want only the first occurrence i
       }
 
     }
