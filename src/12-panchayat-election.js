@@ -64,17 +64,144 @@
  *   // => "voted!"
  */
 export function createElection(candidates) {
-  // Your code here
+  let votes = {};    //private state
+  let registeredVoters = new Set();  //created an empty set named registeredVoters  //private state
+
+  for(let i=0; i<candidates.length; i++)
+  {
+    votes[candidates[i].id] = 0; 
+  }
+
+  return {
+      registerVoter(voter){
+        if(typeof voter !== 'object' || voter === null || voter === undefined || Object.keys(voter).length == 0 || registeredVoters.has(voter.id))
+        {
+          return false;
+        }
+        if(voter.age < 18)
+        {
+          return false;
+        }
+        registeredVoters.add(voter.id); //added in the set
+        return true;
+      },
+
+      castVote(voterId,candidateId,onSuccess,onError){
+        if( !registeredVoters.has(voterId)) //voter not registered ? 
+        {
+          return onError("reason string"); //we return the callback's return value
+        }
+
+        if(!votes.hasOwnProperty(candidateId) )  //candidate does not exist
+        {
+          return onError("reason string");
+        }
+
+        if(votes[voterId] == 1) //already voted ?
+        {
+          return onError("reason string");
+        }
+
+        votes[candidateId] += 1; //record a vote
+        votes[voterId] = 1;   //voter can vote only one candidate
+
+        return onSuccess({voterId,candidateId});
+      },
+
+      getResults(sortFn){
+        
+        const res = [];
+
+        for(let i=0; i<candidates.length; i++)
+        {
+          res.push( {...candidates[i], votes: votes[(candidates[i]).id] } );
+        }
+
+        
+        if(sortFn === undefined)
+        {
+          res.sort((a,b)=> b.votes- a.votes); //sort by decreasing votes 
+        }
+
+        else 
+        {
+         res.sort(sortFn); //sortFn is sort comparator function      
+        }
+
+        return res;
+      },
+
+      getWinner(){
+         //no votes cast
+        if(Object.values(votes).every((e)=> e === 0) )
+        {
+          return null; 
+        }
+       
+        const maximumVotes = candidates.reduce((acc,candidate) => {
+          if(votes[candidate.id] > acc)
+            {
+              return votes[candidate.id];
+            }  
+          return acc;  
+         },-Infinity);
+
+       for(let i=0; i<candidates.length; i++)
+        {
+          if(votes[(candidates[i]).id] == maximumVotes)
+          {
+          return candidates[i];  //return candidate object
+          }
+        }  
+      },
+  };
 }
 
 export function createVoteValidator(rules) {
-  // Your code here
+
+  return function fun(voter){
+     if(!voter.hasOwnProperty("id")) //validation
+     {
+      return {valid:false, reason: "id missing"};
+     }
+    if( !voter.hasOwnProperty("name") ){
+      return {valid: false, reason: "name missing"};
+    }
+     if(!voter.hasOwnProperty("age"))
+     {
+      return {valid:false, reason: "age missing"};
+     }
+     if(voter.age < rules.minAge)
+     {
+      return {valid: false, reason: "age < 18"};
+     }
+
+     return {valid: true,reason: "all rules valid"};
+  };
 }
 
 export function countVotesInRegions(regionTree) {
-  // Your code here
+  if(regionTree === null || typeof regionTree !== 'object')
+  {
+    return 0;
+  }
+  
+  const [head,tail] = regionTree.subRegions;
+  
+  const currVotes = regionTree.votes;
+
+  return currVotes + countVotesInRegions(head) + countVotesInRegions(tail); 
 }
 
 export function tallyPure(currentTally, candidateId) {
-  // Your code here
+  const newTally = {...currentTally};
+  
+  if(!newTally.hasOwnProperty(candidateId))
+  {
+    newTally[candidateId] = 1;
+    return newTally;
+  }
+
+  newTally[candidateId] += 1;
+  return newTally; 
 }

@@ -52,7 +52,8 @@ export function createFestivalManager() {
   let festivals=[];  //private state
 
   return {
-    addFestival(name,date,type){
+    addFestival(name,date,type)   //defining method as method shorthand is better because we can't use new keyword with this regular function, when calling this regular function 
+    { 
        if(name.trim().length === 0 || typeof date != 'string' || (type !== "religious" && type !== "national" && type !== "cultural"))
        {
         return -1;
